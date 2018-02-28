@@ -156,7 +156,7 @@ function fakeSearch(timestamp, callback) {
 }
 
 function realSearch(query, timestamp, callback) {
-	var url = "https://hn.algolia.com/api/v1/search_by_date?query=" + encodeURIComponent(query) + "&tags=(comment,story)&typoTolerance=false&numericFilters=created_at_i%3C" + timestamp;
+	var url = "https://hn.algolia.com/api/v1/search_by_date?query=" + encodeURIComponent(query) + "&tags=(comment,story)&advancedSyntax=true&typoTolerance=false&numericFilters=created_at_i%3C" + timestamp;
 	log(url);
 	$.get(url, function(data) {
 		console.log(data);
@@ -202,6 +202,13 @@ function binarySearch(query, lowerBound, currentPosition, upperBound, callback, 
 	});
 }
 
+// Surround in quotes if not already so.
+function surroundQuotes(s) {
+	if (s.length < 2) return s;
+	if (s[0] == '"' && s[s.length - 1] == '"') return s;
+	return '"' + s + '"';
+}
+
 $(function () {
 	$("#誤").hide();
 	$("input[type=text]").focus();
@@ -212,7 +219,7 @@ $(function () {
 		$('#progressContainer').show();
 		$('#excuse').slideDown();
 		$("#誤").hide();
-		binarySearch($("#query").val(), oldestTimestamp, nowTimestamp, nowTimestamp, function (result) {
+		binarySearch(surroundQuotes($("#query").val()), oldestTimestamp, nowTimestamp, nowTimestamp, function (result) {
 			$('#progressContainer').hide();
 			$('input[type=submit]').removeAttr('disabled');
 			if (result === null) {
